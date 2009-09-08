@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Package xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:uml="http://www.eclipse.org/uml2/3.0.0/UML" xmi:id="_d2StMJwQEd6RgO5YgIAYGw" name="pannotas repository">
+  <elementImport xmi:id="_d2_30JwQEd6RgO5YgIAYGw">
+    <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+  </elementImport>
+  <elementImport xmi:id="_d3Ae4JwQEd6RgO5YgIAYGw">
+    <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+  </elementImport>
+  <elementImport xmi:id="_d3Ae4ZwQEd6RgO5YgIAYGw">
+    <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UnlimitedNatural"/>
+  </elementImport>
+  <elementImport xmi:id="_d3Ae4pwQEd6RgO5YgIAYGw">
+    <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+  </elementImport>
+  <packagedElement xmi:type="uml:Class" xmi:id="_ROXG4JwREd6RgO5YgIAYGw" name="Authentication">
+    <ownedAttribute xmi:id="_h1IE0JwREd6RgO5YgIAYGw" name="name" aggregation="composite"/>
+    <ownedOperation xmi:id="_jRFFcJwREd6RgO5YgIAYGw" name="getPropertyList">
+      <ownedParameter xmi:id="_lt0NoJwREd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_tBGOAJwREd6RgO5YgIAYGw" name="getProperty">
+      <ownedParameter xmi:id="_t2-GEJwREd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_uPtWMJwREd6RgO5YgIAYGw" name="setProperty">
+      <ownedParameter xmi:id="_vNsocJwREd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_wlm2kJwREd6RgO5YgIAYGw" name="login">
+      <ownedParameter xmi:id="_y08b8JwREd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_0NProJwREd6RgO5YgIAYGw" name="getClientList">
+      <ownedParameter xmi:id="_3snVgJwREd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_ASXDUJwSEd6RgO5YgIAYGw" name="operation"/>
+  </packagedElement>
+</uml:Package>

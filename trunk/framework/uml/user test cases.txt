@@ -1,0 +1,18 @@
+AndroidMapViewer:
+
+repository.login()
+
+1.search repository for all pages with the "todo:"
+in each page that has a todo, find all the "gps:" and find the title of the page
+display all the todos / todos in places within a certain radius
+
+
+2.get a list with all titles of pages that have "gps:" tags and let user select
+let user enter the todo
+add a "todo:" tag to the page
+
+3.user wants to create new place
+let user enter the title
+get gps position
+a. create a page with the title of the new place and add "gps:" tag with the position
+b. add "gps:" tag with the position to existing page
