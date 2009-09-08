@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Package xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:uml="http://www.eclipse.org/uml2/3.0.0/UML" xmi:id="_KWppMJwGEd6RgO5YgIAYGw" name="org.pannotas">
+  <elementImport xmi:id="_KZrIAJwGEd6RgO5YgIAYGw">
+    <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+  </elementImport>
+  <elementImport xmi:id="_KZzq4JwGEd6RgO5YgIAYGw">
+    <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+  </elementImport>
+  <elementImport xmi:id="_KZzq4ZwGEd6RgO5YgIAYGw">
+    <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UnlimitedNatural"/>
+  </elementImport>
+  <elementImport xmi:id="_KZzq4pwGEd6RgO5YgIAYGw">
+    <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+  </elementImport>
+  <packagedElement xmi:type="uml:Class" xmi:id="_b9C4IJwGEd6RgO5YgIAYGw" name="Repository">
+    <ownedOperation xmi:id="_kePnsJwHEd6RgO5YgIAYGw" name="readPage">
+      <ownedParameter xmi:id="_7i2y0JwHEd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_21HRUJwHEd6RgO5YgIAYGw" name="writePage">
+      <ownedParameter xmi:id="_3fPMYJwHEd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_-Ys-kJwHEd6RgO5YgIAYGw" name="readPage">
+      <ownedParameter xmi:id="_-zgEMJwHEd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_HMnrQJwIEd6RgO5YgIAYGw" name="login">
+      <ownedParameter xmi:id="_IRwuYJwIEd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_YWvjAJwKEd6RgO5YgIAYGw" name="operation"/>
+    <ownedOperation xmi:id="_aGu58JwKEd6RgO5YgIAYGw" name="bindPhrase">
+      <ownedParameter xmi:id="_bG8ZwJwKEd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_b3AkwJwKEd6RgO5YgIAYGw" name="bindPage">
+      <ownedParameter xmi:id="_coByAJwKEd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_gJ4IIJwKEd6RgO5YgIAYGw" name="readPhrase">
+      <ownedParameter xmi:id="_g5xUAJwKEd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_hzRH0JwKEd6RgO5YgIAYGw" name="writePhrase">
+      <ownedParameter xmi:id="_if49QJwKEd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_6pezcJwKEd6RgO5YgIAYGw" name="find">
+      <ownedParameter xmi:id="_8XRyAJwKEd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_9yB4wJwKEd6RgO5YgIAYGw" name="findTag">
+      <ownedParameter xmi:id="_--XJAJwKEd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_oLcqgJwNEd6RgO5YgIAYGw" name="createPage">
+      <ownedParameter xmi:id="_oyrCkJwNEd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_x6wBYJwNEd6RgO5YgIAYGw" name="appendPhrase">
+      <ownedParameter xmi:id="_2zU54JwNEd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_3RakEJwNEd6RgO5YgIAYGw" name="operation1"/>
+    <ownedOperation xmi:id="_-8W2gJwNEd6RgO5YgIAYGw" name="insertPhrase">
+      <ownedParameter xmi:id="_AkqREJwOEd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_CIsPoJwOEd6RgO5YgIAYGw" name="deletePhrase">
+      <ownedParameter xmi:id="_Cz03UJwOEd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_Dm-ykJwOEd6RgO5YgIAYGw" name="deletePage">
+      <ownedParameter xmi:id="_EFlaIJwOEd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_XFpxwJwOEd6RgO5YgIAYGw" name="copyPhrase">
+      <ownedParameter xmi:id="_ZQwXYJwOEd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_f1mkcJwOEd6RgO5YgIAYGw" name="getPageTitle">
+      <ownedParameter xmi:id="_g3JhAJwOEd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_ret8oJwOEd6RgO5YgIAYGw" name="getAllPages">
+      <ownedParameter xmi:id="_wM90cJwOEd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_phxBYJwGEd6RgO5YgIAYGw" name="AndroidWikiViewer"/>
+  <packagedElement xmi:type="uml:Class" xmi:id="_0I0foJwGEd6RgO5YgIAYGw" name="AndroidMapViewer"/>
+  <packagedElement xmi:type="uml:Class" xmi:id="_FKf38JwHEd6RgO5YgIAYGw" name="DesktopWikiViewer"/>
+  <packagedElement xmi:type="uml:Class" xmi:id="_FO6PIJwNEd6RgO5YgIAYGw" name="SearchResult">
+    <ownedAttribute xmi:id="_KNawgJwNEd6RgO5YgIAYGw" name="page" aggregation="composite"/>
+    <ownedAttribute xmi:id="_LOkEcJwNEd6RgO5YgIAYGw" name="paragraph" aggregation="composite"/>
+    <ownedAttribute xmi:id="_MGACwJwNEd6RgO5YgIAYGw" name="wordStart" aggregation="composite"/>
+    <ownedAttribute xmi:id="_RxlskJwNEd6RgO5YgIAYGw" name="wordEnd" aggregation="composite"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Interface" xmi:id="_6xIWwJwOEd6RgO5YgIAYGw" name="repositoryCallback">
+    <ownedOperation xmi:id="_H9xhwJwQEd6RgO5YgIAYGw" name="change">
+      <ownedParameter xmi:id="_Jzma8JwQEd6RgO5YgIAYGw" direction="return"/>
+    </ownedOperation>
+  </packagedElement>
+</uml:Package>
