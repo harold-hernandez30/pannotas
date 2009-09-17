@@ -11,7 +11,11 @@ public interface RepositoryInterface {
 	public int addClientConnection(String clientName, java.util.Properties params);
 	public boolean deleteClientConnection(String clientName, int connectionID);
 	public java.util.Properties[] getConnectionParams(String clientName, int connectionID);
-		
+	
+	public String[] getAllPageTitles();
+	public PageInfo getPageInfo(String page);
+	
+	public void clearRepository();
 	public void bindRepository(RepositoryBind bind);
 	public void releaseRepositoryBind(RepositoryBind bind);
 	public void bindPage(String page, PhraseBind bind);
@@ -21,7 +25,6 @@ public interface RepositoryInterface {
 	
 	public void writePage(String page, String text);
 	public String readPage(String page, String text);
-	public void addPage(String page, String text);
 	public void deletePage(String page);
 	
 	public void insertPhrase(String page, int paragraph, int wordStart, String text);
