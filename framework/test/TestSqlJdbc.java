@@ -11,6 +11,7 @@ public class TestSqlJdbc {
 	public static void tearDownAfterClass() throws Exception {
 	}
 
+	/*
 	@Test
 	public void test_Hsqldb() throws Exception {
 		StringBuffer buf = new StringBuffer();
@@ -40,6 +41,7 @@ public class TestSqlJdbc {
 		st.execute("SHUTDOWN");
 		conn.close();
 	}
+	*/
 	
 	@Test
 	public void test_Sqlite() throws Exception {
