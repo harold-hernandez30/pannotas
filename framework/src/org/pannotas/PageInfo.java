@@ -1,8 +1,9 @@
 package org.pannotas;
 
 public class PageInfo {
-	java.util.Date creationDate;
-	java.util.Date updateDate;
-	int size;
-	String page;
+	public String page;
+	public String text;
+	public long created;
+	public long updated;
+	public int size;
 }
