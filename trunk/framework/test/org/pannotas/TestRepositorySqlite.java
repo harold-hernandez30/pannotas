@@ -191,7 +191,7 @@ public class TestRepositorySqlite implements RepositoryBind, ParagraphBind {
 	@Test
 	public void testOpenAndClose() throws Exception {
 		RepositorySqlite r = new RepositorySqlite();
-		r.open("PanNotas.db");
+		r.open("test_open.db");
 		r.close();
 	}
 

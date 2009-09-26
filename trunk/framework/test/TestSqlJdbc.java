@@ -49,7 +49,6 @@ public class TestSqlJdbc {
 		
 		for (int i=0; i<10; i++) buf.append("The brown fox is jumping over the slow dog. ");
 		
-		Class.forName("org.hsqldb.jdbcDriver");
 		Class.forName("org.sqlite.JDBC");
 
 		Connection conn = DriverManager.getConnection("jdbc:sqlite:test.db");
