@@ -22,20 +22,20 @@ public class TestRepositorySqlite implements RepositoryBind, ParagraphBind {
 	}
 	
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUpBeforeClass()  {
 		rep = new RepositorySqlite();	
 		rep.open("test_unit.db");
 		rep.clearRepository();
 	}
 
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
+	public static void tearDownAfterClass()  {
 		rep.close();
 		rep = null;
 	}
 
 	@Test
-	public void testAppendPhrase()  throws SQLException {
+	public void testAppendPhrase()   {
 		rep.clearRepository();
 		rep.appendPhrase("test append", "append 1");
 		assertEquals(rep.readPage("test append"),"append 1");
@@ -44,7 +44,7 @@ public class TestRepositorySqlite implements RepositoryBind, ParagraphBind {
 	}
 
 	@Test
-	public void testBindPage() throws SQLException {
+	public void testBindPage()  {
 		rep.clearRepository();		
 		
 		rep.bindPage("test21", this);
@@ -71,7 +71,7 @@ public class TestRepositorySqlite implements RepositoryBind, ParagraphBind {
 	}
 
 	@Test
-	public void testBindParagrah() throws SQLException{
+	public void testBindParagrah() {
 		rep.clearRepository();
 		
 		rep.bindParagrah("test22", 1, this);
@@ -83,7 +83,7 @@ public class TestRepositorySqlite implements RepositoryBind, ParagraphBind {
 	}
 
 	@Test
-	public void testBindRepository() throws SQLException{	
+	public void testBindRepository() {	
 		rep.clearRepository();		
 		
 		resetCallback();
@@ -110,7 +110,7 @@ public class TestRepositorySqlite implements RepositoryBind, ParagraphBind {
 	}
 
 	@Test
-	public void testGetAllPageTitles() throws SQLException {
+	public void testGetAllPageTitles()  {
 		String[] p;
 		rep.clearRepository();
 		p = rep.getAllPageTitles();
@@ -127,7 +127,7 @@ public class TestRepositorySqlite implements RepositoryBind, ParagraphBind {
 	}
 
 	@Test
-	public void testGetPageInfo() throws SQLException{
+	public void testGetPageInfo() {
 		rep.writePage("test11","1234567");
 		PageInfo info = rep.getPageInfo("test11");
 		assertEquals(info.text, "1234567");
@@ -135,7 +135,7 @@ public class TestRepositorySqlite implements RepositoryBind, ParagraphBind {
 	}
 
 	@Test
-	public void testInsertPhrase() throws SQLException {
+	public void testInsertPhrase()  {
 		rep.writePage("test10", "Hello World!\nWhat is happening?");
 		rep.insertPhrase("test10", 1, 5, "the hell ");
 		assertEquals(rep.readPage("test10"),"Hello World!\nWhat the hell is happening?");
@@ -152,21 +152,21 @@ public class TestRepositorySqlite implements RepositoryBind, ParagraphBind {
 	}
 	
 	@Test
-	public void testChangePhrase() throws SQLException {
+	public void testChangePhrase()  {
 		rep.writePage("test11", "Hello World!\nWhat is happening?");
 		rep.changePhrase("test11", 1, 0, 7, "Not sure");
 		assertEquals(rep.readPage("test11"),"Hello World!\nNot sure happening?");
 	}
 
 	@Test
-	public void testDeletePhrase()  throws SQLException {
+	public void testDeletePhrase()   {
 		rep.writePage("test2", "This is some text.");
 		rep.deletePhrase("test2", 0, 4, 8);
 		assertEquals(rep.readPage("test2"),"This text.");
 	}
 
 	@Test
-	public void testCopyPhrase() throws SQLException {
+	public void testCopyPhrase()  {
 		rep.writePage("test6", "hello world today!");
 		rep.writePage("test7", "1\n2\n3");
 		
@@ -175,7 +175,7 @@ public class TestRepositorySqlite implements RepositoryBind, ParagraphBind {
 	}
 	
 	@Test
-	public void testDeletePage()  throws SQLException {
+	public void testDeletePage()   {
 		rep.writePage("test delete", "some text");
 		assertNotNull(rep.readPage("test delete"));
 		rep.deletePage("test delete");
@@ -183,20 +183,20 @@ public class TestRepositorySqlite implements RepositoryBind, ParagraphBind {
 	}
 
 	@Test
-	public void testWriteReadPage() throws SQLException{
+	public void testWriteReadPage() {
 		rep.writePage("test write read","what are you doing?");
 		assertEquals(rep.readPage("test write read"),"what are you doing?");
 	}
 
 	@Test
-	public void testOpenAndClose() throws Exception {
+	public void testOpenAndClose()  {
 		RepositorySqlite r = new RepositorySqlite();
 		r.open("test_open.db");
 		r.close();
 	}
 
 	@Test 
-	public void testFindAllInPage() throws SQLException {
+	public void testFindAllInPage()  {
 		rep.writePage("s","first line\nsecond line\ntodo:buy milk\ntodo:buy bananas");
 		
 		Pattern pat = Pattern.compile("line");
@@ -217,7 +217,7 @@ public class TestRepositorySqlite implements RepositoryBind, ParagraphBind {
 	}
 	
 	@Test
-	public void testSqlExists() throws Exception {
+	public void testSqlExists()  {
 		assertFalse(rep.sqlPageExists("some completely random non-existent page.."));
 		java.util.Date d = new java.util.Date();
 		rep.sqlSetPage("test1", "This is a test text. The brown fox jumps !!!", d.getTime());
@@ -225,7 +225,7 @@ public class TestRepositorySqlite implements RepositoryBind, ParagraphBind {
 	}	
 
 	@Test
-	public void testSqlSetGet() throws Exception {
+	public void testSqlSetGet()  {
 		java.util.Date d = new java.util.Date();
 		rep.sqlSetPage("test1", "blah text bloom", d.getTime());
 		assertEquals(rep.sqlGetPage("test1"), "blah text bloom");

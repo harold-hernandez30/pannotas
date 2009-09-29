@@ -1,17 +1,52 @@
 package org.pannotas;
 
-import java.sql.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Date;
 import java.util.regex.*;
 
+import android.content.Context;
+import android.util.Log;
+
+
+/**
+ * @author ciprian
+ *
+ */
 public class RepositorySqlite implements RepositoryInterface {
-	private Connection connection;
-	private Statement st;
+	final static int PLATFORM_ANDROID = 1;
+	final static int PLATFORM_PC = 2;
+	final static String DATABASE_NAME = "pannotasdb";
+	
+	private int platform = 0; 
+	private java.sql.Connection jdbcConnection;
+	private android.database.sqlite.SQLiteDatabase androidConnection;
+
 	private long lastUpdateTime = 0;
 	
-	public RepositorySqlite() {		
+	public RepositorySqlite() {
+		//Check for android
+		if (System.getProperty("java.vm.name").equals("Dalvik")) {		
+		    try {
+		       Class.forName("android.database.sqlite.SQLiteDatabase", false, null);
+		       platform = PLATFORM_ANDROID;
+		    }
+		    catch (ClassNotFoundException e) {}
+		}
+		
+		//check for PC (JDBC has to be present)
+		if (platform ==0) {
+		    try {
+		    		Class.forName("org.sqlite.JDBC");
+		    		platform = PLATFORM_PC;
+			    }
+			    catch (ClassNotFoundException e) {}
+		}
+		
+		if (platform == 0 ) {
+			throw new RuntimeException("Cannot find either the ANDROID nor the JDBC sqlite.");
+		}
 	}
 	
 	
@@ -28,7 +63,7 @@ public class RepositorySqlite implements RepositoryInterface {
 	}
 
 	@Override
-	public void appendPhrase(String page, String text) throws SQLException{
+	public void appendPhrase(String page, String text) {
 		long t = getNewUpdateTime();
 		// TODO Network sync
 
@@ -57,14 +92,14 @@ public class RepositorySqlite implements RepositoryInterface {
 	}
 
 	@Override
-	public void clearRepository() throws SQLException{
-		st.execute("delete from pages");
-		st.execute("delete from objects");
+	public void clearRepository() {
+		sqlExecute("delete from pages");
+		sqlExecute("delete from objects");
 	}
 
 	@Override
 	public void copyPhrase(String sourcePage, int sourceParagraph,int sourceStart, int length, 
-			String targetPage, int targetParagraph, int targetStart) throws SQLException {
+			String targetPage, int targetParagraph, int targetStart) {
 		long t = getNewUpdateTime();
 		// TODO Network sync
 
@@ -104,16 +139,27 @@ public class RepositorySqlite implements RepositoryInterface {
 	}
 
 	@Override
-	public void deletePage(String page) throws SQLException{
+	public void deletePage(String page) {
 		// TODO Network sync
 
-		PreparedStatement prep = connection.prepareStatement("delete from pages where page=?");
-		prep.setString(1, page);
-		prep.execute();
+		switch (platform) {
+		case PLATFORM_ANDROID:
+			androidConnection.execSQL("delete from pages where page=?", new String[] {page});
+			break;
+		case PLATFORM_PC:
+			try {
+				java.sql.PreparedStatement prep = jdbcConnection.prepareStatement("delete from pages where page=?");
+				prep.setString(1, page);
+				prep.execute();
+			} catch (SQLException e) {throw new RuntimeException(e); }
+			break;			
+		}
+		
+			
 	}
 
 	@Override
-	public void deletePhrase(String page, int paragraph, int start,	int length) throws SQLException {
+	public void deletePhrase(String page, int paragraph, int start,	int length) {
 		long t = getNewUpdateTime();
 		// TODO Network sync
 
@@ -129,16 +175,33 @@ public class RepositorySqlite implements RepositoryInterface {
 	}
 
 	@Override
-	public String[] getAllPageTitles() throws SQLException{
-		st.execute("select page from pages");
-		ResultSet rs = st.getResultSet();
-		if (rs != null ) {
-			java.util.ArrayList<String> p = new java.util.ArrayList<String>();
-			while (rs.next()) {
-				p.add(rs.getString(1));
+	public String[] getAllPageTitles() {
+		java.util.ArrayList<String> p;
+		
+		switch (platform) {
+		case PLATFORM_ANDROID:
+			android.database.Cursor cur = androidConnection.query("pages",new String[] {"page"},null,null,null,null,null);
+			if (cur.getCount() < 1) return null;
+			p = new java.util.ArrayList<String>();
+			while (cur.moveToNext()) {
+				p.add(cur.getString(0));
 			}
 			return p.toArray(new String[0]);
-		}
+			
+		case PLATFORM_PC:
+			try {
+				java.sql.Statement st = jdbcConnection.createStatement();
+				st.execute("select page from pages");
+				java.sql.ResultSet rs = st.getResultSet();
+				if (rs != null ) {
+					p = new java.util.ArrayList<String>();
+					while (rs.next()) {
+						p.add(rs.getString(1));
+					}
+					return p.toArray(new String[0]);
+				}
+			} catch (SQLException e) {throw new RuntimeException(e); }
+		}		
 		
 		return null;
 	}
@@ -156,27 +219,33 @@ public class RepositorySqlite implements RepositoryInterface {
 	}
 
 	@Override
-	public PageInfo getPageInfo(String page) throws SQLException{
-		PreparedStatement prep = connection.prepareStatement("select page, data, created, updated, size from pages " +
-				"where page=?");
-		prep.setString(1, page);
-		prep.execute();
-		ResultSet rs = prep.getResultSet();
-		if (rs == null)	return null;
-		else if (rs.next()==false) return null;
-		else {
-			PageInfo info = new PageInfo();
-			info.page = rs.getString(1);
-			info.text = rs.getString(2);
-			info.created = rs.getLong(3);
-			info.updated = rs.getLong(4);
-			info.size = rs.getInt(5);
-			return info;
+	public PageInfo getPageInfo(String page) {
+		switch (platform) {
+		case PLATFORM_ANDROID:
+			android.database.Cursor cur = androidConnection.query("pages",new String[] {"page","data","created","updated","size"},
+				"page=?", new String[] {page}, null, null, null);
+				if (cur.getCount() < 1) return null;
+				cur.moveToFirst();
+				return new PageInfo(cur.getString(0), cur.getString(1),cur.getLong(2),cur.getLong(3),cur.getInt(4));			
+		case PLATFORM_PC:
+			try {
+				java.sql.PreparedStatement prep = jdbcConnection.prepareStatement("select page, data, created, updated, size from pages " +
+						"where page=?");
+				prep.setString(1, page);
+				prep.execute();
+				java.sql.ResultSet rs = prep.getResultSet();
+				if (rs == null) 	return null;
+				else if (rs.next()==false) return null;
+				else {
+					return new PageInfo(rs.getString(1), rs.getString(2),rs.getLong(3),rs.getLong(4),rs.getInt(5));
+				}
+			} catch (SQLException e) {throw new RuntimeException(e); }
 		}
+		return null;
 	}
 
 	@Override
-	public void insertPhrase(String page, int paragraph, int start,	String text) throws SQLException {
+	public void insertPhrase(String page, int paragraph, int start,	String text) {
 		long t = getNewUpdateTime();
 		// TODO Network sync
 
@@ -190,7 +259,7 @@ public class RepositorySqlite implements RepositoryInterface {
 	}
 
 	@Override
-	public String readPage(String page) throws SQLException{
+	public String readPage(String page) {
 				
 		return sqlGetPage(page);
 	}
@@ -214,7 +283,7 @@ public class RepositorySqlite implements RepositoryInterface {
 	}
 
 	@Override
-	public void writePage(String page, String text) throws SQLException{
+	public void writePage(String page, String text) {
 		long t = getNewUpdateTime();
 		//TODO Networking sync
 		
@@ -223,82 +292,184 @@ public class RepositorySqlite implements RepositoryInterface {
 
 
 	@Override
-	public void close() throws SQLException{
-		connection.close();
-		st = null;
-		connection = null;
+	public void close() {
+		switch (platform) {
+		case PLATFORM_ANDROID:
+			androidConnection.close();
+			androidConnection = null;
+			break;
+		case PLATFORM_PC:
+			try {
+				jdbcConnection.close();
+				jdbcConnection = null;
+			} catch (SQLException e) {throw new RuntimeException(e); }
+			break;			
+		}
+				
 	}
 
 
 	@Override
-	public void open(String dbName) throws Exception {
-		Class.forName("org.sqlite.JDBC");
+	public void open(String dbName) {
+		if (dbName == null) {
+			dbName = DATABASE_NAME;
+		}
 		
-		connection = DriverManager.getConnection("jdbc:sqlite:" + dbName);
-		st = connection.createStatement();
+		switch (platform) {
+		case PLATFORM_ANDROID:			
+			androidConnection = android.database.sqlite.SQLiteDatabase.openOrCreateDatabase(dbName, null);
+			break;
+		case PLATFORM_PC:
+			try {
+				jdbcConnection = java.sql.DriverManager.getConnection("jdbc:sqlite:" + dbName);
+			} catch (SQLException e) {throw new RuntimeException(e); }
+			break;			
+		}
+			
+	    sqlExecute("PRAGMA page_size=16384");
+	    sqlExecute("PRAGMA journal_mode=OFF"); 
+	    sqlExecute("PRAGMA synchronous = OFF");
+	    sqlExecute("PRAGMA temp_store = MEMORY");
+	    sqlExecute("PRAGMA cache_size = 10000"); 		
+		
+	    //create the tables and ignore the sql errors if they exist
+	    try {
+	    	sqlExecute("create table pages (page text, data text, created integer, updated integer, size integer)");
+	    	sqlExecute("create table objects (object text, data blob, created integer, updated integer, size integer)");
+	    }
+	    catch (Throwable e) {}
+		
+	}
+
+	public void openAndroid(android.content.Context context, String dbName) {
+		if (dbName == null) {
+			dbName = DATABASE_NAME;
+		}
+		androidConnection = context.openOrCreateDatabase(dbName, 0, null);
+
+	    sqlExecute("PRAGMA page_size=16384");
+	    //sqlExecute("PRAGMA journal_mode=OFF"); does not seem to work on Android
+	    sqlExecute("PRAGMA synchronous = OFF");
+	    sqlExecute("PRAGMA temp_store = MEMORY");
+	    sqlExecute("PRAGMA cache_size = 10000"); 		
+		
+	    //create the tables and ignore the sql errors if they exist
+	    try {
+	    	sqlExecute("create table pages (page text, data text, created integer, updated integer, size integer)");
+	    	sqlExecute("create table objects (object text, data blob, created integer, updated integer, size integer)");
+	    }
+	    catch (Throwable e) {}
+	}
 	
-	    st.execute("PRAGMA page_size=16384");
-	    st.execute("PRAGMA journal_mode=OFF");
-	    st.execute("PRAGMA synchronous = OFF");
-	    st.execute("PRAGMA temp_store = MEMORY");
-	    st.execute("PRAGMA cache_size = 10000"); 		
-		
-	    //if the tables does not exist then create it
-		st.execute("select * from sqlite_master where type='table' and name='pages'");
-		ResultSet rs = st.getResultSet();
-		if (rs.next() == false) { 
-			st.execute("create table pages (page text, data text, created integer, updated integer, size integer)");
+	protected boolean sqlPageExists(String page) {
+		switch (platform) {
+		case PLATFORM_ANDROID:
+			try {
+				android.database.Cursor cur = androidConnection.query("pages",new String[] {"page"},"page=?",new String[]{page},null,null,null);
+				if (cur.getCount() < 1) return false;			
+				//pages should always be unique
+				assert cur.getCount() == 1;
+			}
+			catch (Throwable e) { 
+					e.printStackTrace();
+					System.out.println(e.toString());
+			}
+			return true;
+		case PLATFORM_PC:
+			try {
+				java.sql.PreparedStatement prep = jdbcConnection.prepareStatement("select page from pages where page=?");
+				prep.setString(1, page);
+				prep.execute();
+				java.sql.ResultSet rs = prep.getResultSet();
+				if ( rs.next() ) return true;
+				return false;
+			} catch (SQLException e) {throw new RuntimeException(e); }
 		}
-		rs.close();
-		
-	    //if the tables does not exist then create it
-		st.execute("select * from sqlite_master where type='table' and name='objects'");
-		rs = st.getResultSet();
-		if (rs.next() == false) { 
-			st.execute("create table objects (object text, data blob, created integer, updated integer, size integer)");
-		}
-		rs.close();					
-
-		
-	}
-
-	protected boolean sqlPageExists(String page) throws SQLException {
-		st.execute("select * from pages where page='" + page + "'");
-		ResultSet rs = st.getResultSet();
-		if ( rs.next() ) return true;
-		else return false;		
+		return false;
 	}
 	
-	protected void sqlSetPage(String page, String text, long time) throws SQLException {
-		if ( sqlPageExists(page) ) {
-			PreparedStatement prep = connection.prepareStatement("update pages set data=?, updated=?, size=?" +
-					" where page=?");
-			prep.setString(1,text);
-			prep.setLong(2, time);
-			prep.setInt(3, text.length());
-			prep.setString(4,page);
-			prep.execute();
+	protected void sqlSetPage(String page, String text, long time) {
+		switch (platform) {
+		case PLATFORM_ANDROID:
+			if ( sqlPageExists(page) ) {
+				androidConnection.execSQL("update pages set data=?, updated=?, size=? where page=?", 
+						new Object[] {text,time,text.length(),page});
+			}
+			else {
+				androidConnection.execSQL("insert into pages values(?,?,?,?,?)", 
+						new Object[] {page,text,time,time,text.length()});				
+			}
+			break;
+		case PLATFORM_PC:
+			try {
+				if ( sqlPageExists(page) ) {
+					java.sql.PreparedStatement prep = jdbcConnection.prepareStatement("update pages set data=?, updated=?, size=?" +
+							" where page=?");
+					prep.setString(1,text);
+					prep.setLong(2, time);
+					prep.setInt(3, text.length());
+					prep.setString(4,page);
+					prep.execute();
+				}
+				else {
+					java.sql.PreparedStatement prep = jdbcConnection.prepareStatement("insert into pages values(?,?,?,?,?)");
+					prep.setString(1,page);
+					prep.setString(2,text);
+					prep.setLong(3, time);
+					prep.setLong(4, time);
+					prep.setInt(5, text.length());
+					prep.execute();
+				}
+			} catch (SQLException e) {throw new RuntimeException(e); }
+			break;
 		}
-		else {
-			PreparedStatement prep = connection.prepareStatement("insert into pages values(?,?,?,?,?)");
-			prep.setString(1,page);
-			prep.setString(2,text);
-			prep.setLong(3, time);
-			prep.setLong(4, time);
-			prep.setInt(5, text.length());
-			prep.execute();
-		}
+				
 	}
 
-	protected String sqlGetPage(String page) throws SQLException {
-		st.execute("select data from pages where page='" + page + "'");
-		ResultSet rs = st.getResultSet();
-		if ( rs.next() ) {
-			return rs.getString(1);
+	protected String sqlGetPage(String page) {
+		switch (platform) {
+		case PLATFORM_ANDROID:
+			android.database.Cursor cur = androidConnection.query("pages",new String[] {"data"},"page=?",new String[]{page},null,null,null);
+			if (cur.getCount() < 1) return null;			
+			//pages should always be unique
+			assert(cur.getCount() == 1);
+			cur.moveToFirst();
+			return cur.getString(0);
+		case PLATFORM_PC:
+			try {
+				java.sql.PreparedStatement prep = jdbcConnection.prepareStatement("select data from pages where page=?");
+				prep.setString(1, page);
+				prep.execute();
+				java.sql.ResultSet rs = prep.getResultSet();
+				if ( rs.next() ) {
+					return rs.getString(1);
+				}
+				return null;
+			} catch (SQLException e) {throw new RuntimeException(e); }
 		}
 		return null;
 	}
 
+	
+	/**
+	 * It will execute an SQL statement
+	 * @param sql statement to execute 
+	 */
+	protected void sqlExecute(String sql) {
+		switch (platform) {
+		case PLATFORM_ANDROID:
+			androidConnection.execSQL(sql);
+			break;
+		case PLATFORM_PC:
+			try {
+				java.sql.Statement st = jdbcConnection.createStatement();
+				st.execute(sql);
+			} catch (SQLException e) {throw new RuntimeException(e); }
+			break;			
+		}
+		
+	}
+	
 	protected long getNewUpdateTime() {
 		Date d = new Date();
 		long t = d.getTime();
@@ -346,7 +517,7 @@ public class RepositorySqlite implements RepositoryInterface {
 	}
 
 	@Override
-	public void changePhrase(String page, int paragraph, int start, int length, String text) throws SQLException {
+	public void changePhrase(String page, int paragraph, int start, int length, String text) {
 		long t = getNewUpdateTime();
 		// TODO Network sync
 
@@ -372,7 +543,7 @@ public class RepositorySqlite implements RepositoryInterface {
 
 
 	@Override
-	public PhraseLocation[] findAll(Pattern search, String page) throws SQLException {
+	public PhraseLocation[] findAll(Pattern search, String page) {
 		ArrayList<PhraseLocation> results = new ArrayList<PhraseLocation>();
 		
 		String p = readPage(page);
