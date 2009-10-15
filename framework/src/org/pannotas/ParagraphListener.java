@@ -1,6 +1,6 @@
 package org.pannotas;
 
-public interface ParagraphBind {
+public interface ParagraphListener {
 	public void phraseInserted(String page, int paragraph, int start, String text);
 	public void phraseChanged(String page, int paragraph, int start, int length, String text);
 	public void phraseDeleted(String page, int paragraph, int start, int length);

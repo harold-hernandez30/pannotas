@@ -74,19 +74,19 @@ public class RepositorySqlite implements RepositoryInterface {
 	}
 
 	@Override
-	public void bindPage(String page, ParagraphBind bind) {
+	public void addPageListener(String page, ParagraphListener bind) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void bindParagrah(String page, int paragraph, ParagraphBind bind) {
+	public void addParagrahListener(String page, int paragraph, ParagraphListener bind) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void bindRepository(RepositoryBind bind) {
+	public void addRepositoryListener(RepositoryListener bind) {
 		// TODO Auto-generated method stub
 
 	}
@@ -265,19 +265,19 @@ public class RepositorySqlite implements RepositoryInterface {
 	}
 
 	@Override
-	public void releasePageBind(String page, ParagraphBind bind) {
+	public void removePageListener(String page, ParagraphListener bind) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void releaseParagraphBind(String page, int paragraph, ParagraphBind bind) {
+	public void removeParagraphListener(String page, int paragraph, ParagraphListener bind) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void releaseRepositoryBind(RepositoryBind bind) {
+	public void removeRepositoryListener(RepositoryListener bind) {
 		// TODO Auto-generated method stub
 
 	}
@@ -559,6 +559,84 @@ public class RepositorySqlite implements RepositoryInterface {
 		}
 		
 		return results.toArray(new PhraseLocation[0]);
+	}
+
+
+	@Override
+	public void addResourceListener(String resource, ResourceListener bind) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void deleteResource(String resource) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public PhraseLocation findNext(Pattern search, PhraseLocation lastFind) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public PhraseLocation findNext(Pattern search, String page,
+			PhraseLocation lastFind) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public void flush() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public String[] getAllResourceNames() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public String[] getAllSystemPageTitles() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public byte[] readResource(String resource) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public String readResourceType(String resource) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public void removeResourceListener(String resource, ResourceListener bind) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void writeResource(String resource, String mimeType, byte[] data) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
