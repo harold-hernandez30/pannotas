@@ -14,22 +14,25 @@ import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.UIManager.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.pannotas.RepositorySqlite;
 
+class TitleNode {
+	public String displayedTitle;
+	public String page;
+	public TitleNode(String displayedTitle, String page) {
+		this.displayedTitle = displayedTitle;
+		this.page = page;
+	}
+	public String toString() {
+		return displayedTitle;
+	}
+}
 
-/**
-* This code was edited or generated using CloudGarden's Jigloo
-* SWT/Swing GUI Builder, which is free for non-commercial
-* use. If Jigloo is being used commercially (ie, by a corporation,
-* company or business for any purpose whatever) then you
-* should purchase a license for each developer using Jigloo.
-* Please visit www.cloudgarden.com for details.
-* Use of Jigloo implies acceptance of these licensing terms.
-* A COMMERCIAL LICENSE HAS NOT BEEN PURCHASED FOR
-* THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
-* LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
-*/
 public class NotebookGui extends javax.swing.JDialog {
 	private JMenuBar jMenuBar1;
 	private JButton jButton1;
@@ -42,10 +45,9 @@ public class NotebookGui extends javax.swing.JDialog {
 	private JMenu jMenu1;
 
 	private RepositorySqlite rep;
+	private DefaultMutableTreeNode notesRoot;
+	private TitleNode activeNote; 
 	
-	/**
-	* Auto-generated main method to display this JDialog
-	*/
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -59,15 +61,19 @@ public class NotebookGui extends javax.swing.JDialog {
 	private void initRepository() {
 		rep = new RepositorySqlite();
 		rep.open("pannotas.db");
+		
+		//All repositories should have a main page called notebook
 		if (rep.readPage("Notebook")==null) {
 			rep.writePage("Notebook", "Welcome to PanNotas!\n");
 		}
+		
+		notesRoot = new DefaultMutableTreeNode(new TitleNode("Notebook","Notebook")); 
 	}
 	
 	
 	public NotebookGui(JFrame frame) {
 		super(frame);
-		initRepository();
+		initRepository();				
 		initGUI();
 	}
 	
@@ -78,52 +84,55 @@ public class NotebookGui extends javax.swing.JDialog {
             	System.exit(0);
             }
         });
-
-		
-		try {
-			{
-				jToolBar1 = new JToolBar();
-				getContentPane().add(jToolBar1, BorderLayout.NORTH);
-				{
-					jButton1 = new JButton();
-					jToolBar1.add(jButton1);
-					jButton1.setText("jButton1");
-				}
-			}
-			{
-				jSplitPane1 = new JSplitPane();
-				getContentPane().add(jSplitPane1, BorderLayout.CENTER);
-				jSplitPane1.setDividerLocation(200);
-				{
-					notesTree = new JTree();
-					jSplitPane1.add(notesTree, JSplitPane.LEFT);
-				}
-				{
-					notesTabs = new JTabbedPane();
-					jSplitPane1.add(notesTabs, JSplitPane.RIGHT);
-					{
-						noteScrollEdit = new JScrollPane();
-						notesTabs.addTab("Note", null, noteScrollEdit, null);
-						{
-							noteEditor = new JTextPane();
-							noteScrollEdit.setViewportView(noteEditor);
-						}
-					}
-				}
-			}
-			{
-				jMenuBar1 = new JMenuBar();
-				setJMenuBar(jMenuBar1);
-				{
-					jMenu1 = new JMenu();
-					jMenuBar1.add(jMenu1);
-					jMenu1.setText("jMenu1");
-				}
-			}
-			pack();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        
+        try {
+            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (UnsupportedLookAndFeelException e) {
+            // handle exception
+        } catch (ClassNotFoundException e) {
+            // handle exception
+        } catch (InstantiationException e) {
+            // handle exception
+        } catch (IllegalAccessException e) {
+            // handle exception
+        }
+        
+		jToolBar1 = new JToolBar();
+		getContentPane().add(jToolBar1, BorderLayout.NORTH);
+		jButton1 = new JButton();
+		jToolBar1.add(jButton1);
+		jButton1.setText("jButton1");
+					
+		jSplitPane1 = new JSplitPane();
+		getContentPane().add(jSplitPane1, BorderLayout.CENTER);
+		jSplitPane1.setDividerLocation(200);
+		notesTree = new JTree(notesRoot);
+		jSplitPane1.add(notesTree, JSplitPane.LEFT);
+		notesTabs = new JTabbedPane();
+		jSplitPane1.add(notesTabs, JSplitPane.RIGHT);
+		noteScrollEdit = new JScrollPane();
+		notesTabs.addTab("Note", null, noteScrollEdit, null);
+		noteEditor = new JTextPane();
+		noteScrollEdit.setViewportView(noteEditor);
+		jMenuBar1 = new JMenuBar();
+		setJMenuBar(jMenuBar1);
+		jMenu1 = new JMenu();
+		jMenuBar1.add(jMenu1);
+		jMenu1.setText("jMenu1");
+		pack();
+		this.setSize(600, 400);
+		//noteEditor.add
+		//setNote((TitleNode)notesRoot.getUserObject());
 	}
 
+	private void setNote(TitleNode node) {
+		activeNote = node;
+		noteEditor.setText(rep.readPage(activeNote.page));
+		notesTabs.setTitleAt(0, activeNote.displayedTitle);
+	}
 }
