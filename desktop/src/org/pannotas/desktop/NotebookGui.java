@@ -4,17 +4,8 @@ import java.awt.event.*;
 
 import javax.swing.JButton;
 
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextPane;
-import javax.swing.JToolBar;
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
+import javax.swing.*;
+import javax.swing.border.*;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.UIManager.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -36,13 +27,15 @@ class TitleNode {
 public class NotebookGui extends javax.swing.JDialog {
 	private JMenuBar jMenuBar1;
 	private JButton jButton1;
-	private JTextPane noteEditor;
+	private PNTextPane noteEditor;
 	private JScrollPane noteScrollEdit;
 	private JTabbedPane notesTabs;
 	private JTree notesTree;
 	private JSplitPane jSplitPane1;
 	private JToolBar jToolBar1;
 	private JMenu jMenu1;
+	private JPanel statusBar;
+	private JLabel statusText;
 
 	private RepositorySqlite rep;
 	private DefaultMutableTreeNode notesRoot;
@@ -117,22 +110,32 @@ public class NotebookGui extends javax.swing.JDialog {
 		jSplitPane1.add(notesTabs, JSplitPane.RIGHT);
 		noteScrollEdit = new JScrollPane();
 		notesTabs.addTab("Note", null, noteScrollEdit, null);
-		noteEditor = new JTextPane();
-		noteScrollEdit.setViewportView(noteEditor);
 		jMenuBar1 = new JMenuBar();
 		setJMenuBar(jMenuBar1);
 		jMenu1 = new JMenu();
 		jMenuBar1.add(jMenu1);
 		jMenu1.setText("jMenu1");
+		
+		statusBar = new JPanel();
+		statusBar.setLayout(new BorderLayout());
+		statusText = new JLabel("Status");
+		statusBar.add(statusText, BorderLayout.CENTER);
+		statusBar.setBorder(new BevelBorder(BevelBorder.LOWERED));
+
+		noteEditor = new PNTextPane(rep);
+		noteEditor.setStatusText(statusText);
+		noteScrollEdit.setViewportView(noteEditor);
+		
+		getContentPane().add(statusBar,BorderLayout.SOUTH);
 		pack();
-		this.setSize(600, 400);
+		this.setSize(700, 500);
 		//noteEditor.add
 		//setNote((TitleNode)notesRoot.getUserObject());
 	}
 
 	private void setNote(TitleNode node) {
 		activeNote = node;
-		noteEditor.setText(rep.readPage(activeNote.page));
+		//noteEditor.setText(rep.readPage(activeNote.page));
 		notesTabs.setTitleAt(0, activeNote.displayedTitle);
 	}
 }
