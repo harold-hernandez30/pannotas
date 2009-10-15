@@ -19,6 +19,7 @@ public interface RepositoryInterface {
 	public String[] getAllPageTitles();
 	public String[] getAllSystemPageTitles();
 	public PageInfo getPageInfo(String page);
+	public String[] getPageChildren(String page);
 		
 	public void clearRepository();
 	public void flush();
@@ -35,6 +36,7 @@ public interface RepositoryInterface {
 	public void writePage(String page, String text);
 	public String readPage(String page);
 	public void deletePage(String page);
+	public boolean isPage(String page);
 	
 	public void insertPhrase(String page, int paragraph, int start, String text);
 	public void appendPhrase(String page, String text);

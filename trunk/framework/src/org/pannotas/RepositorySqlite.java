@@ -639,4 +639,27 @@ public class RepositorySqlite implements RepositoryInterface {
 		
 	}
 
+
+	@Override
+	public boolean isPage(String page) {
+		if (readPage(page)==null) return false;
+		return true;
+	}
+
+
+	@Override
+	public String[] getPageChildren(String page) {
+		ArrayList<String> results = new ArrayList<String>();
+		Pattern search = Pattern.compile("\\[\\[(.+)\\]\\]"); 
+		
+		String p = readPage(page);
+		if (p == null) return null;
+		Matcher match = search.matcher(p);
+		while (match.find()) {
+			results.add(match.group(1));
+		}
+		
+		return results.toArray(new String[0]);
+	}
+
 }
