@@ -28,7 +28,7 @@ public class PhraseLocation {
 	
 	@Override
 	public int hashCode() {		
-		return page.hashCode()*100+paragraph*start*length;
+		return page.hashCode()*10000+paragraph*100+start*length;
 	}
 	
 }

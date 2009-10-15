@@ -1,46 +1,56 @@
 package org.pannotas;
-import java.sql.SQLException;
 
 /**
  * @author ciprian
  * 
- * Word separators: " ' , ; : | / \  & @ 
  *
  */
 public interface RepositoryInterface {
-	public void open(String dbName) throws Exception;
-	public void close() throws SQLException;
+	public void open(String dbName) ;
+	public void close();
 	
-	public boolean addClient(String clientName, int clientType) throws SQLException;
-	public boolean deleteClient(String clientName) throws SQLException;
-	public String[] getClientList() throws SQLException;
-	public int addClientConnection(String clientName, java.util.Properties params) throws SQLException;
-	public boolean deleteClientConnection(String clientName, int connectionID) throws SQLException;
-	public java.util.Properties[] getConnectionParams(String clientName, int connectionID) throws SQLException;
+	public boolean addClient(String clientName, int clientType);
+	public boolean deleteClient(String clientName);
+	public String[] getClientList();
+	public int addClientConnection(String clientName, java.util.Properties params);
+	public boolean deleteClientConnection(String clientName, int connectionID);
+	public java.util.Properties[] getConnectionParams(String clientName, int connectionID);
 	
-	public String[] getAllPageTitles() throws SQLException;
-	public PageInfo getPageInfo(String page) throws SQLException;
+	public String[] getAllPageTitles();
+	public String[] getAllSystemPageTitles();
+	public PageInfo getPageInfo(String page);
 		
-	public void clearRepository() throws SQLException;	
+	public void clearRepository();
+	public void flush();
 	
-	public void bindRepository(RepositoryBind bind);
-	public void releaseRepositoryBind(RepositoryBind bind);
-	public void bindPage(String page, ParagraphBind bind);
-	public void releasePageBind(String page, ParagraphBind bind);
-	public void bindParagrah(String page, int paragraph, ParagraphBind bind);
-	public void releaseParagraphBind(String page, int paragraph, ParagraphBind bind);
+	public void addRepositoryListener(RepositoryListener bind);
+	public void removeRepositoryListener(RepositoryListener bind);
+	public void addPageListener(String page, ParagraphListener bind);
+	public void removePageListener(String page, ParagraphListener bind);
+	public void addParagrahListener(String page, int paragraph, ParagraphListener bind);
+	public void removeParagraphListener(String page, int paragraph, ParagraphListener bind);
+	public void addResourceListener(String resource, ResourceListener bind);
+	public void removeResourceListener(String resource, ResourceListener bind);
 	
-	public void writePage(String page, String text) throws SQLException;
-	public String readPage(String page) throws SQLException;
-	public void deletePage(String page) throws SQLException;
+	public void writePage(String page, String text);
+	public String readPage(String page);
+	public void deletePage(String page);
 	
-	public void insertPhrase(String page, int paragraph, int start, String text) throws SQLException;
-	public void appendPhrase(String page, String text) throws SQLException;
-	public void deletePhrase(String page, int paragraph, int start, int end) throws SQLException;
-	public void changePhrase(String page, int paragraph, int start, int end, String text) throws SQLException;
+	public void insertPhrase(String page, int paragraph, int start, String text);
+	public void appendPhrase(String page, String text);
+	public void deletePhrase(String page, int paragraph, int start, int end);
+	public void changePhrase(String page, int paragraph, int start, int end, String text);
 	public void copyPhrase(String sourcePage, int sourceParagraph, int sourceStart, int length,
-			String targetPage, int targetParagraph, int targetStart) throws SQLException;
+			String targetPage, int targetParagraph, int targetStart);
 	
-	public PhraseLocation[] findAll(java.util.regex.Pattern search) throws SQLException;
-	public PhraseLocation[] findAll(java.util.regex.Pattern search, String page) throws SQLException;
+	public void writeResource(String resource, String mimeType, byte[] data);
+	public byte[] readResource(String resource);
+	public String readResourceType(String resource);
+	public void deleteResource(String resource);
+	public String[] getAllResourceNames();
+		
+	public PhraseLocation[] findAll(java.util.regex.Pattern search);
+	public PhraseLocation[] findAll(java.util.regex.Pattern search, String page);
+	public PhraseLocation findNext(java.util.regex.Pattern search, PhraseLocation lastFind);
+	public PhraseLocation findNext(java.util.regex.Pattern search, String page, PhraseLocation lastFind);
 }
