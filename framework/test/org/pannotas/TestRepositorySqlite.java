@@ -9,7 +9,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class TestRepositorySqlite implements RepositoryBind, ParagraphBind {
+public class TestRepositorySqlite implements RepositoryListener, ParagraphListener {
 	private static RepositorySqlite rep;
 	private boolean page_changed, page_deleted, page_added;
 	private boolean phrase_inserted, phrase_deleted, phrase_changed, paragraph_moved;
@@ -44,70 +44,70 @@ public class TestRepositorySqlite implements RepositoryBind, ParagraphBind {
 	}
 
 	@Test
-	public void testBindPage()  {
-		rep.clearRepository();		
-		
-		rep.bindPage("test21", this);
-		rep.writePage("test21","hello world");
-
-		resetCallback();
-		rep.insertPhrase("test21", 0, 0, "no ");
-		assertTrue(phrase_inserted);
-		assertEquals(page_callback,"test21");
-		assertEquals(text_callback,"no ");
-
-		resetCallback();
-		rep.deletePhrase("test21", 0, 3, 3);
-		assertTrue(phrase_deleted);
-		assertEquals(page_callback,"test21");
-
-		resetCallback();
-		rep.changePhrase("test21", 0, 0, 3, "yes ");
-		assertTrue(phrase_changed);
-		assertEquals(page_callback,"test21");
-		assertEquals(text_callback,"yes ");			
-		
-		rep.releasePageBind("test21", this);
-	}
-
-	@Test
-	public void testBindParagrah() {
-		rep.clearRepository();
-		
-		rep.bindParagrah("test22", 1, this);
-		
-		resetCallback();
-		rep.writePage("test22","what\n\nis\ngoing\non?");
-		
-		fail("not implemented");
-	}
+		public void testAddPageListener()  {
+			rep.clearRepository();		
+			
+			rep.addPageListener("test21", this);
+			rep.writePage("test21","hello world");
+	
+			resetCallback();
+			rep.insertPhrase("test21", 0, 0, "no ");
+			assertTrue(phrase_inserted);
+			assertEquals(page_callback,"test21");
+			assertEquals(text_callback,"no ");
+	
+			resetCallback();
+			rep.deletePhrase("test21", 0, 3, 3);
+			assertTrue(phrase_deleted);
+			assertEquals(page_callback,"test21");
+	
+			resetCallback();
+			rep.changePhrase("test21", 0, 0, 3, "yes ");
+			assertTrue(phrase_changed);
+			assertEquals(page_callback,"test21");
+			assertEquals(text_callback,"yes ");			
+			
+			rep.removePageListener("test21", this);
+		}
 
 	@Test
-	public void testBindRepository() {	
-		rep.clearRepository();		
-		
-		resetCallback();
-		rep.bindRepository(this);
-		rep.writePage("test1", "some text");
-		assertTrue(page_added);
-		assertEquals(page_callback,"test1");
-		
-		resetCallback();
-		rep.deletePage("test2");
-		assertTrue(page_deleted);
-		assertEquals(page_callback,"test2");
-		
-		resetCallback();
-		rep.insertPhrase("test1", 0, 0, "more text ");
-		assertTrue(page_changed);
-		assertEquals(page_callback,"test1");
-		
-		rep.releaseRepositoryBind(this);
-		rep.writePage("test3", "dah dum");
-		assertFalse(page_added);
-		assertFalse(page_deleted);
-		assertFalse(page_changed);
-	}
+		public void testAddParagrahListener() {
+			rep.clearRepository();
+			
+			rep.addParagrahListener("test22", 1, this);
+			
+			resetCallback();
+			rep.writePage("test22","what\n\nis\ngoing\non?");
+			
+			fail("not implemented");
+		}
+
+	@Test
+		public void testAddRepositoryListener() {	
+			rep.clearRepository();		
+			
+			resetCallback();
+			rep.addRepositoryListener(this);
+			rep.writePage("test1", "some text");
+			assertTrue(page_added);
+			assertEquals(page_callback,"test1");
+			
+			resetCallback();
+			rep.deletePage("test2");
+			assertTrue(page_deleted);
+			assertEquals(page_callback,"test2");
+			
+			resetCallback();
+			rep.insertPhrase("test1", 0, 0, "more text ");
+			assertTrue(page_changed);
+			assertEquals(page_callback,"test1");
+			
+			rep.removeRepositoryListener(this);
+			rep.writePage("test3", "dah dum");
+			assertFalse(page_added);
+			assertFalse(page_deleted);
+			assertFalse(page_changed);
+		}
 
 	@Test
 	public void testGetAllPageTitles()  {
