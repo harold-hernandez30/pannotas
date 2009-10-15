@@ -9,6 +9,8 @@ import javax.swing.border.*;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.UIManager.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 import org.pannotas.RepositorySqlite;
 
@@ -24,7 +26,7 @@ class TitleNode {
 	}
 }
 
-public class NotebookGui extends javax.swing.JDialog {
+public class NotebookGui extends javax.swing.JDialog implements PNLinkListener {
 	private JMenuBar jMenuBar1;
 	private JButton jButton1;
 	private PNTextPane noteEditor;
@@ -38,10 +40,13 @@ public class NotebookGui extends javax.swing.JDialog {
 	private JLabel statusText;
 
 	private RepositorySqlite rep;
-	private DefaultMutableTreeNode notesRoot;
+	private DefaultMutableTreeNode nodeRoot;
+	private DefaultMutableTreeNode nodeCurrent;
+	private DefaultTreeModel treeModel;
 	private TitleNode activeNote; 
 	
 	public static void main(String[] args) {
+		/*
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				JFrame frame = new JFrame();
@@ -49,6 +54,10 @@ public class NotebookGui extends javax.swing.JDialog {
 				inst.setVisible(true);
 			}
 		});
+		*/
+		JFrame frame = new JFrame();
+		NotebookGui inst = new NotebookGui(frame);
+		inst.setVisible(true);
 	}
 	
 	private void initRepository() {
@@ -60,10 +69,22 @@ public class NotebookGui extends javax.swing.JDialog {
 			rep.writePage("Notebook", "Welcome to PanNotas!\n");
 		}
 		
-		notesRoot = new DefaultMutableTreeNode(new TitleNode("Notebook","Notebook")); 
+		nodeRoot = new DefaultMutableTreeNode(new TitleNode("Notebook","Notebook")); 
+		nodeCurrent = nodeRoot;
+		rescanNode(nodeCurrent);
 	}
-	
-	
+		
+	private void rescanNode(DefaultMutableTreeNode node) {
+		node.removeAllChildren();
+		String page = ((TitleNode)nodeCurrent.getUserObject()).page;
+		
+		String[] children = rep.getPageChildren(page);
+		for (int i=0; i<children.length; i++) {
+			TitleNode newChild = new TitleNode(children[i],children[i]);
+			node.add(new DefaultMutableTreeNode(newChild));
+		}
+	}
+
 	public NotebookGui(JFrame frame) {
 		super(frame);
 		initRepository();				
@@ -104,7 +125,10 @@ public class NotebookGui extends javax.swing.JDialog {
 		jSplitPane1 = new JSplitPane();
 		getContentPane().add(jSplitPane1, BorderLayout.CENTER);
 		jSplitPane1.setDividerLocation(200);
-		notesTree = new JTree(notesRoot);
+		
+		treeModel = new DefaultTreeModel(nodeRoot);
+		notesTree = new JTree(treeModel);
+		
 		jSplitPane1.add(notesTree, JSplitPane.LEFT);
 		notesTabs = new JTabbedPane();
 		jSplitPane1.add(notesTabs, JSplitPane.RIGHT);
@@ -125,17 +149,49 @@ public class NotebookGui extends javax.swing.JDialog {
 		noteEditor = new PNTextPane(rep);
 		noteEditor.setStatusText(statusText);
 		noteScrollEdit.setViewportView(noteEditor);
+		noteEditor.addLinkListener(this);
 		
 		getContentPane().add(statusBar,BorderLayout.SOUTH);
 		pack();
 		this.setSize(700, 500);
 		//noteEditor.add
-		//setNote((TitleNode)notesRoot.getUserObject());
+		setNote((TitleNode)nodeRoot.getUserObject());		
 	}
 
 	private void setNote(TitleNode node) {
 		activeNote = node;
-		//noteEditor.setText(rep.readPage(activeNote.page));
-		notesTabs.setTitleAt(0, activeNote.displayedTitle);
+		noteEditor.setRepositoryPage(activeNote.page);
+		notesTabs.setTitleAt(0,activeNote.displayedTitle);
+	}
+
+	@Override
+	public void clickedHttp(String http) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void clickedPage(String page) {
+		// TODO Auto-generated method stub
+		statusText.setText("Clicked on page "+page);
+
+		if (rep.isPage(page)==false) {
+			rep.writePage(page, "");
+		}
+		
+		rescanNode(nodeCurrent);
+		for (int i=0; i<nodeCurrent.getChildCount(); i++) {
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)nodeCurrent.getChildAt(i); 
+			TitleNode tn = (TitleNode) node.getUserObject();
+			if (tn.page.equals(page)) {
+				nodeCurrent = node;
+				rescanNode(nodeCurrent);
+				break;
+			}
+		}
+		treeModel.reload();
+		notesTree.expandPath(new TreePath(nodeCurrent.getPath()));
+		notesTree.repaint();
+		setNote(new TitleNode(page,page));
 	}
 }
