@@ -1,0 +1,1 @@
+Inspired by Wikidpad, but written in java. It is meant to be portable and make your notes accessible from anywhere.
